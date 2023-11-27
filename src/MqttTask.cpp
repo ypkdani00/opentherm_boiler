@@ -137,15 +137,12 @@ bool MqttTask::updateSettings(JsonDocument &doc)
     flag = true;
   }
 
-  for (int i = 0; i < INDOOR_SENSOR_NUMBER; i++)
+  if (!doc["heating"]["target"].isNull() && doc["heating"]["target"].is<float>())
   {
-    if (!doc["heating"]["target"].isNull() && doc["heating"]["target"].is<float>())
+    if (doc["heating"]["target"].as<float>() > 0 && doc["heating"]["target"].as<float>() < 100)
     {
-      if (doc["heating"]["target"].as<float>() > 0 && doc["heating"]["target"].as<float>() < 100)
-      {
-        settings.heating.target[i] = round(doc["heating"]["target"].as<float>() * 10) / 10;
-        flag = true;
-      }
+      settings.heating.target = round(doc["heating"]["target"].as<float>() * 10) / 10;
+      flag = true;
     }
   }
 
@@ -334,6 +331,7 @@ bool MqttTask::updateSettings(JsonDocument &doc)
       if (doc["sensors"]["indoor"]["type"].as<unsigned char>() >= 1 && doc["sensors"]["indoor"]["type"].as<unsigned char>() <= 2)
       {
         settings.sensors.indoor[i].type = doc["sensors"]["indoor"]["type"].as<unsigned char>();
+        settings.sensors.indoor[i].setpoint = doc["sensors"]["indoor"]["setpoint"].as<unsigned char>();
         flag = true;
       }
     }
@@ -387,9 +385,10 @@ bool MqttTask::updateVariables(const JsonDocument &doc)
   {
     if (!doc["temperatures"]["indoor"].isNull() && doc["temperatures"]["indoor"].is<float>())
     {
-      if (settings.sensors.indoor[i].type == INDOOR_SENSOR_TYPE::INDOOR_SENSOR_MANUAL && doc["temperatures"]["indoor"].as<float>() > -100 && doc["temperatures"]["indoor"].as<float>() < 100)
+      if (settings.sensors.indoor[i].type >= INDOOR_SENSOR_TYPE::INDOOR_SENSOR_MANUAL && doc["temperatures"]["indoor"].as<float>() > -100 && doc["temperatures"]["indoor"].as<float>() < 100)
       {
         vars.temperatures.indoor[i] = round(doc["temperatures"]["indoor"].as<float>() * 100) / 100;
+        vars.temperatures.setpoint[i] = round(doc["temperatures"]["indoor"].as<float>() * 100) / 100;
         flag = true;
       }
     }
@@ -581,12 +580,9 @@ bool MqttTask::publishNonStaticHaEntities(bool force)
 
   if (force || _heatingMinTemp != heatingMinTemp || _heatingMaxTemp != heatingMaxTemp)
   {
-    for (int i = 0; i < INDOOR_SENSOR_NUMBER; i++)
+    if (settings.heating.target < heatingMinTemp || settings.heating.target > heatingMaxTemp)
     {
-      if (settings.heating.target[i] < heatingMinTemp || settings.heating.target[i] > heatingMaxTemp)
-      {
-        settings.heating.target[i] = constrain(settings.heating.target[i], heatingMinTemp, heatingMaxTemp);
-      }
+      settings.heating.target = constrain(settings.heating.target, heatingMinTemp, heatingMaxTemp);
     }
 
     _heatingMinTemp = heatingMinTemp;

@@ -1,0 +1,3 @@
+Need to check where is set settings.heating.target and how to set it using different setpoint for the different rooms
+Add setpoint for every room
+Add the pin define for the relay output of onoff/pid and equitherm control

@@ -381,11 +381,11 @@ void OpenThermTask::loop()
     if (settings.heating.hysteresis > 0 && !vars.states.emergency && (settings.equitherm[i].enable || settings.pid[i].enable))
     {
       float halfHyst = settings.heating.hysteresis / 2;
-      if (pump && vars.temperatures.indoor[i] - settings.heating.target[i] + 0.0001 >= halfHyst)
+      if (pump && vars.temperatures.indoor[i] - settings.heating.target + 0.0001 >= halfHyst)
       {
         pump |= false;
       }
-      else if (!pump && vars.temperatures.indoor[i] - settings.heating.target[i] - 0.0001 <= -(halfHyst))
+      else if (!pump && vars.temperatures.indoor[i] - settings.heating.target - 0.0001 <= -(halfHyst))
       {
         pump |= true;
       }

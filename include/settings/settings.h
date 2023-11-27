@@ -51,7 +51,7 @@ struct Settings
   {
     bool enable = true;
     bool turbo = false;
-    float target[INDOOR_SENSOR_NUMBER] = {20.0f};
+    float target = 25.0f;
     float hysteresis = 0.5f;
     byte minTemp = DEFAULT_HEATING_MIN_TEMP;
     byte maxTemp = DEFAULT_HEATING_MAX_TEMP;
@@ -69,11 +69,18 @@ struct Settings
   struct
   {
     bool enable = false;
+    byte pin = NULL;
+  } onoff[INDOOR_SENSOR_NUMBER];
+
+  struct
+  {
+    bool enable = false;
     float p_factor = 3;
     float i_factor = 0.2f;
     float d_factor = 0;
     byte minTemp = 0;
     byte maxTemp = DEFAULT_HEATING_MAX_TEMP;
+    byte pin = NULL;
   } pid[INDOOR_SENSOR_NUMBER];
 
   struct
@@ -82,6 +89,7 @@ struct Settings
     float n_factor = 0.7f;
     float k_factor = 3.0f;
     float t_factor = 2.0f;
+    byte pin = NULL;
   } equitherm[INDOOR_SENSOR_NUMBER];
 
   struct
@@ -96,9 +104,10 @@ struct Settings
 
     struct
     {
-      // 1 - manual, 2 - ds18b20, 3 - MQTT
-      byte type = INDOOR_SENSOR_TYPE::INDOOR_SENSOR_MANUAL;
+      // 0 - disabled, 1 - manual, 2 - relay, 3 - ds18b20, 4 - MQTT
+      byte type = INDOOR_SENSOR_TYPE::INDOOR_SENSOR_RELAY;
       byte pin = SENSOR_INDOOR_PIN_DEFAULT;
+      float setpoint = 21.0f;
       float offset = 0.0f;
     } indoor[INDOOR_SENSOR_NUMBER];
 
@@ -138,6 +147,7 @@ struct Variables
   struct
   {
     float indoor[INDOOR_SENSOR_NUMBER] = {0.0f};
+    float setpoint[INDOOR_SENSOR_NUMBER] = {0.0f};
     float outdoor = 0.0f;
     float heating = 0.0f;
     float dhw = 0.0f;

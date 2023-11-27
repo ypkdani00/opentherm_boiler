@@ -18,7 +18,7 @@
 #define SETTINGS_VALID_VALUE        "stvalid" // only 8 chars!
 
 #define DEFAULT_HEATING_MIN_TEMP    20
-#define DEFAULT_HEATING_MAX_TEMP    90
+#define DEFAULT_HEATING_MAX_TEMP    40
 #define DEFAULT_DHW_MIN_TEMP        30
 #define DEFAULT_DHW_MAX_TEMP        60
 
